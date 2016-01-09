@@ -76,6 +76,36 @@ def command_line(history):
     while True:
         get_user_input(history)
 
+def process_commands(commands, history=[]):
+    """TODO: Docstring for process_commands.
+
+    :commands: TODO
+    :history: TODO
+    :returns: TODO
+
+    """
+    i = 0
+    while i < len(commands):
+        command = commands[i]
+        print(command)
+        if command == u'g':
+            history = generate_character(history)
+        elif command == u'x':
+            print(history)
+            sys.exit(0)
+        elif command == u'o':
+            i += 1
+            character = commands[i]
+            history = observe_character(history, character)
+        elif command == u'q':
+            i += 1
+            character = commands[i]
+            query_character(history, character)
+        i += 1
+
 if __name__ == "__main__":
     history = []
-    command_line(history)
+    # command_line(history)
+    commands = sys.stdin.read()
+    commands = to_unicode(commands)
+    process_commands(commands, history)
