@@ -108,10 +108,10 @@ def process_commands(commands, history=[]):
         i += 1
 
 def test():
-    history = u'It was the best of times'
+    history = u'It was the best of tim'
     alphabet = get_bmp_alphabet()
     model = MyLanguageModel(alphabet=alphabet)
-    with open('freq_dist_3gram.pickle', 'rb') as f:
+    with open('freq_dist_4gram.pickle', 'rb') as f:
         cfd = pickle.load(f)
     model.load_cfd(cfd)
     print('loaded model')
