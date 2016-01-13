@@ -54,6 +54,7 @@ class MyLanguageModel(object):
             history = ''.join(history)
         context = history[-context_len:]
         counts = self._cfd[context]  # A NLTK FreqDist object
+        print(counts.items())
         counts = self.do_smoothing(counts)
         probabilities = {}
         denom = counts.N()

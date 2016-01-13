@@ -108,10 +108,10 @@ def process_commands(commands, history=[]):
         i += 1
 
 def test():
-    history = 'It was the best of times'
+    history = u'It was the best of times'
     alphabet = get_bmp_alphabet()
     model = MyLanguageModel(alphabet=alphabet)
-    with open('freq_dist_4gram.pickle', 'rb') as f:
+    with open('freq_dist_3gram.pickle', 'rb') as f:
         cfd = pickle.load(f)
     model.load_cfd(cfd)
     print('loaded model')
@@ -122,6 +122,15 @@ def test():
         sum += v
     if sum > 0.999999:
         print('sums to one')
+    p = []
+    for char in alphabet:
+        p.append(probabilities[char])
+    print(probabilities[u'.'])
+    gen = np.random.choice(alphabet, p=p)
+    print(gen)
+    print(ord(gen))
+    print(probabilities[u' '])
+    print(probabilities[unichr(62688)])
     sys.exit()
 
 
