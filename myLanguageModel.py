@@ -48,13 +48,14 @@ class MyLanguageModel(object):
         context_len = self._ngram_seq_count -1
 
         if len(history) < context_len:
-            raise RuntimeError("history is too short for the %d-gram model" % (self._ngram_seq_count))
+            # raise RuntimeError("history is too short for the %d-gram model" % (self._ngram_seq_count))
+            return {}
 
         if isinstance(history, list):
             history = ''.join(history)
         context = history[-context_len:]
         counts = self._cfd[context]  # A NLTK FreqDist object
-        print(counts.items())
+        # print(counts.items())
         counts = self.do_smoothing(counts)
         probabilities = {}
         denom = counts.N()
