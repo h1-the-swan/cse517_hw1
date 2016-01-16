@@ -68,11 +68,12 @@ def generate_character(history, model):
         for char in alphabet:
             p.append(probabilities[char])
         gen = np.random.choice(alphabet, p=p)
-        sys.stdout.write(gen)
-        sys.stdout.write(u'\n')
-        sys.stdout.flush()
+        # sys.stdout.write(gen)
+        # sys.stdout.write(u'\n')
+        # sys.stdout.flush()
         # history = history + gen
-        history.append(gen)
+        # history.append(gen)
+        observe_character(history, gen, model)
     else:
         print('history is too short, and this is unhandled. TODO: fix this')
     return history

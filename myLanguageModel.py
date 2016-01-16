@@ -38,10 +38,12 @@ class MyLanguageModel(object):
         """
         return self._cfd[test_str]
 
-    def calculate_probabilities(self, history):
-        """TODO: Docstring for calculate_probabilities.
+    def calculate_probabilities(self, history, lmda=0.01):
+        """
+        calculate the probability distribution across the alphabet with additive smoothing
 
         :history: TODO
+        :lmda: the lambda value to use for additive smoothing
         :returns: TODO
 
         """
@@ -56,20 +58,22 @@ class MyLanguageModel(object):
         context = history[-context_len:]
         counts = self._cfd[context]  # A NLTK FreqDist object
         # print(counts.items())
-        counts = self.do_smoothing(counts)
         probabilities = {}
-        denom = counts.N()
-        for char, count in counts.iteritems():
-            probabilities[char] = float(count) / denom
+        denom = float(counts.N()) + ( lmda * len(self.alphabet) )
+        for char in self.alphabet:
+            observed = counts[char]
+            probabilities[char] = (float(observed) + lmda) / denom
+        # for char, count in counts.iteritems():
+        #     probabilities[char] = float(count) / denom
         return probabilities
 
-    def do_smoothing(self, counts):
-        """TODO: Docstring for do_smoothing.
-
-        :counts: TODO
-        :returns: TODO
-
-        """
-        for char in self.alphabet:
-            counts[char] += 1
-        return counts
+    # def do_smoothing(self, counts):
+    #     """TODO: Docstring for do_smoothing.
+    #
+    #     :counts: TODO
+    #     :returns: TODO
+    #
+    #     """
+    #     for char in self.alphabet:
+    #         counts[char] += 1
+    #     return counts
