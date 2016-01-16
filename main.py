@@ -28,7 +28,7 @@ def load_model():
     model = MyLanguageModel(alphabet=alphabet)
     # with open('freq_dist_4gram.pickle', 'rb') as f:
     #     cfd = pickle.load(f)
-    cfd = load_cfd('freq_dist_4gram.pickle')
+    cfd = load_cfd('freq_dist_3gram.pickle')
     model.load_cfd(cfd)
     return model
 

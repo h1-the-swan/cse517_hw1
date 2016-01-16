@@ -44,9 +44,11 @@ if verbose:
 c = 0
 for gram in ngrams:
     first_elem = list(gram[:-1])
-    first_elem = ''.join(first_elem)
-    second_elem = gram[-1]
-    freq_dist[first_elem][second_elem] += 1
+    # exclude ngrams with stop character (unless it's in the final position)
+    if u'\u0003' not in first_elem:
+        first_elem = ''.join(first_elem)
+        second_elem = gram[-1]
+        freq_dist[first_elem][second_elem] += 1
     c += 1
     if verbose:
         if ( c in [20, 100, 1000, 10000, 100000, 1000000] ) or ( c % 10000000 == 0 ):
