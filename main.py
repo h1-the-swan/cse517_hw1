@@ -1,6 +1,7 @@
 import sys, argparse, pickle, math
 import numpy as np
 from get_bmp_alphabet import get_bmp_alphabet
+from load_freqdist_pickle import load_cfd
 from myLanguageModel import MyLanguageModel
 
 parser = argparse.ArgumentParser(description='CSE517 HW1')
@@ -25,8 +26,9 @@ def load_model():
     """
     alphabet = get_bmp_alphabet()
     model = MyLanguageModel(alphabet=alphabet)
-    with open('freq_dist_4gram.pickle', 'rb') as f:
-        cfd = pickle.load(f)
+    # with open('freq_dist_4gram.pickle', 'rb') as f:
+    #     cfd = pickle.load(f)
+    cfd = load_cfd('freq_dist_4gram.pickle')
     model.load_cfd(cfd)
     return model
 
@@ -62,7 +64,6 @@ def generate_character(history, model):
     ###
     probabilities = model.calculate_probabilities(history)
     if probabilities:
-        prob = probabilities[character]
         p = []
         for char in alphabet:
             p.append(probabilities[char])
@@ -70,7 +71,8 @@ def generate_character(history, model):
         sys.stdout.write(gen)
         sys.stdout.write(u'\n')
         sys.stdout.flush()
-        history = history + gen
+        # history = history + gen
+        history.append(gen)
     else:
         print('history is too short, and this is unhandled. TODO: fix this')
     return history
@@ -134,7 +136,10 @@ def process_commands(model, commands, history=[]):
         if command == u'g':
             history = generate_character(history, model)
         elif command == u'x':
-            print(history)
+            if isinstance(history, list):
+                print(''.join(history))
+            else:
+                print(history)
             sys.exit(0)
         elif command == u'o':
             i += 1
