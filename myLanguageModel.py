@@ -1,7 +1,7 @@
-try:
-    from cdecimal import Decimal
-except ImportError:
-    from decimal import Decimal
+# try:
+#     from cdecimal import Decimal
+# except ImportError:
+#     from decimal import Decimal
 class MyLanguageModel(object):
 
     """Docstring for MyLanguageModel. """
@@ -51,7 +51,7 @@ class MyLanguageModel(object):
         :returns: TODO
 
         """
-        lmda = Decimal(lmda)
+        # lmda = Decimal(lmda)
         context_len = self._ngram_seq_count -1
 
         if len(history) < context_len:
@@ -66,10 +66,23 @@ class MyLanguageModel(object):
         probabilities = {}
         # denom = float(counts.N()) + ( lmda * len(self.alphabet) )
         denom = counts.N() + ( lmda * len(self.alphabet) )
-        for char in self.alphabet:
+        running_sum = 0
+        # for char in self.alphabet:
+        for i in xrange(len(self.alphabet)):
+            char = self.alphabet[i]
             observed = counts[char]
-            probabilities[char] = Decimal((observed + lmda) / denom)
+            # probabilities[char] = Decimal((observed + lmda) / denom)
             # probabilities[char] = (float(observed) + lmda) / denom
+
+            # problem with probabilities not summing to one, trying this:
+            # http://stackoverflow.com/questions/17641300/rounding-floats-so-that-they-sum-to-precisely-1
+            if i < len(self.alphabet):
+                p_i = (float(observed) + lmda) / denom
+                p_i = 1.0 - (1.0 - p_i)
+                running_sum += p_i
+            else:
+                p_i = 1 - running_sum
+            probabilities[char] = p_i
         # for char, count in counts.iteritems():
         #     probabilities[char] = float(count) / denom
         return probabilities

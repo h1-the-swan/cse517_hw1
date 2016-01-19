@@ -6,8 +6,14 @@ from myLanguageModel import MyLanguageModel
 
 parser = argparse.ArgumentParser(description='CSE517 HW1')
 parser.add_argument('random_seed', type=int, help='Seed for the random number generator')
+parser.add_argument('-n', '--ngram', type=int, choices=xrange(2,9), help='n (int) to use for the ngram (default 2: bigram)')
+parser.add_argument('-v', '--verbose', help='verbose output for debugging', action='store_true')
 args = parser.parse_args()
 np.random.seed(args.random_seed)
+ngram_n = 2
+if args.ngram:
+    ngram_n = args.ngram
+verbose = args.verbose
 
 alphabet = get_bmp_alphabet()
 
@@ -17,6 +23,10 @@ def to_unicode(obj, encoding='utf-8'):
         if not isinstance(obj, unicode):
             obj = unicode(obj, encoding)
     return obj
+
+def output(out_str):
+    sys.stdout.write(out_str.encode('utf-8'))
+    sys.stdout.flush()
 
 def load_model():
     """TODO: Docstring for function.
@@ -28,7 +38,7 @@ def load_model():
     model = MyLanguageModel(alphabet=alphabet)
     # with open('freq_dist_4gram.pickle', 'rb') as f:
     #     cfd = pickle.load(f)
-    cfd = load_cfd('freq_dist_2gram.pickle')
+    cfd = load_cfd('freq_dist_%dgram.pickle' %(ngram_n))
     model.load_cfd(cfd)
     return model
 
@@ -73,8 +83,12 @@ def generate_character(history, model):
         # sys.stdout.flush()
         # history = history + gen
         # history.append(gen)
-        sys.stdout.write('generated character: %s (unicode character %d)\n' %(gen, ord(gen)))
-        observe_character(history, gen, model)
+        out_str = gen
+        if verbose:
+            out_str = out_str + "// generated unicode character %d" %(ord(gen))
+        out_str = out_str + u'\n'
+        output(out_str)
+        history = observe_character(history, gen, model)
     else:
         print('history is too short, and this is unhandled. TODO: fix this')
     return history
@@ -87,17 +101,20 @@ def observe_character(history, character, model):
 
     """
     if character == u'\u0003':
-        # sys.stdout.write('Clearing history\n')
+        if verbose:
+            output(u'// Clearing history')
         history = []
     else:
         probabilities = model.calculate_probabilities(history)
         if probabilities:
             prob = probabilities[character]
             logprob = math.log(prob, 2 )
+            if verbose:
+                out_str = "// added character %s to history (logprob %.3f)" %(character, logprob)
+                output(out_str)
             # sys.stdout.write('log probability for %s: %.6f' %(character, logprob))
         history.append(character)
-    sys.stdout.write(u'\n')
-    sys.stdout.flush()
+    output(u'\n')
     return history
 
 def query_character(history, character, model):
@@ -112,9 +129,8 @@ def query_character(history, character, model):
         prob = probabilities[character]
         logprob = math.log(prob, 2)
         # sys.stdout.write('log probability for %s: %.6f' %(character, logprob))
-        sys.stdout.write(str(logprob))
-    sys.stdout.write(u'\n')
-    sys.stdout.flush()
+        output(str(logprob))
+    output(u'\n')
     return
 
 def command_line(history):
@@ -140,10 +156,11 @@ def process_commands(model, commands, history=[]):
         if command == u'g':
             history = generate_character(history, model)
         elif command == u'x':
-            if isinstance(history, list):
-                print(''.join(history))
-            else:
-                print(history)
+            if verbose:
+                if isinstance(history, list):
+                    output(''.join(history))
+                else:
+                    output(history)
             sys.exit(0)
         elif command == u'o':
             i += 1
@@ -155,34 +172,6 @@ def process_commands(model, commands, history=[]):
             query_character(history, character, model)
         i += 1
 
-def test():
-    history = u'It was the best of timom '
-    alphabet = get_bmp_alphabet()
-    model = MyLanguageModel(alphabet=alphabet)
-    with open('freq_dist_4gram.pickle', 'rb') as f:
-        cfd = pickle.load(f)
-    model.load_cfd(cfd)
-    print('loaded model')
-    for i in range(50):
-        probabilities = model.calculate_probabilities(history)
-        # print('got probabilities, len %d' %(len(probabilities)))
-        # sum = 0
-        # for k, v in probabilities.iteritems():
-        #     sum += v
-        # if sum > 0.999999:
-        #     print('sums to one')
-        p = []
-        for char in alphabet:
-            p.append(probabilities[char])
-        # print(probabilities[u'.'])
-        gen = np.random.choice(alphabet, p=p)
-        # print(gen)
-        # print(ord(gen))
-        history = history + gen
-        print(history)
-
-    print(history)
-    sys.exit()
 
 
 if __name__ == "__main__":
