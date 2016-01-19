@@ -1,6 +1,7 @@
 import argparse, sys, codecs, time
 import cPickle as pickle
 import nltk
+from datetime import datetime
 
 start = time.time()
 
@@ -29,7 +30,8 @@ with codecs.open(fname, 'r', 'utf-8') as f:
     text = f.read()
 
 if verbose:
-    print("Reading n-grams (seq_length %d)" %(seq_length))
+    print(datetime.now())
+    print("Reading n-grams (seq_length %d) from file: %s" %(seq_length, fname))
     sys.stdout.flush()
 ngrams = nltk.ngrams(text, seq_length)
 if verbose:

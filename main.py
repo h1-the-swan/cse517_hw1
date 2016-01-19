@@ -28,7 +28,7 @@ def load_model():
     model = MyLanguageModel(alphabet=alphabet)
     # with open('freq_dist_4gram.pickle', 'rb') as f:
     #     cfd = pickle.load(f)
-    cfd = load_cfd('freq_dist_4gram.pickle')
+    cfd = load_cfd('freq_dist_2gram.pickle')
     model.load_cfd(cfd)
     return model
 
@@ -112,7 +112,7 @@ def query_character(history, character, model):
         prob = probabilities[character]
         logprob = math.log(prob, 2)
         # sys.stdout.write('log probability for %s: %.6f' %(character, logprob))
-        sys.stdout.write(logprob)
+        sys.stdout.write(str(logprob))
     sys.stdout.write(u'\n')
     sys.stdout.flush()
     return

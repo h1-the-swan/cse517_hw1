@@ -1,3 +1,7 @@
+try:
+    from cdecimal import Decimal
+except ImportError:
+    from decimal import Decimal
 class MyLanguageModel(object):
 
     """Docstring for MyLanguageModel. """
@@ -47,6 +51,7 @@ class MyLanguageModel(object):
         :returns: TODO
 
         """
+        lmda = Decimal(lmda)
         context_len = self._ngram_seq_count -1
 
         if len(history) < context_len:
@@ -59,10 +64,12 @@ class MyLanguageModel(object):
         counts = self._cfd[context]  # A NLTK FreqDist object
         # print(counts.items())
         probabilities = {}
-        denom = float(counts.N()) + ( lmda * len(self.alphabet) )
+        # denom = float(counts.N()) + ( lmda * len(self.alphabet) )
+        denom = counts.N() + ( lmda * len(self.alphabet) )
         for char in self.alphabet:
             observed = counts[char]
-            probabilities[char] = (float(observed) + lmda) / denom
+            probabilities[char] = Decimal((observed + lmda) / denom)
+            # probabilities[char] = (float(observed) + lmda) / denom
         # for char, count in counts.iteritems():
         #     probabilities[char] = float(count) / denom
         return probabilities
