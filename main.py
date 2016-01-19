@@ -1,4 +1,4 @@
-import sys, argparse, pickle, math
+import sys, argparse, math
 import numpy as np
 from get_bmp_alphabet import get_bmp_alphabet
 from load_freqdist_pickle import load_cfd
@@ -28,7 +28,7 @@ def load_model():
     model = MyLanguageModel(alphabet=alphabet)
     # with open('freq_dist_4gram.pickle', 'rb') as f:
     #     cfd = pickle.load(f)
-    cfd = load_cfd('freq_dist_3gram.pickle')
+    cfd = load_cfd('freq_dist_4gram.pickle')
     model.load_cfd(cfd)
     return model
 
@@ -73,6 +73,7 @@ def generate_character(history, model):
         # sys.stdout.flush()
         # history = history + gen
         # history.append(gen)
+        sys.stdout.write('generated character: %s (unicode character %d)\n' %(gen, ord(gen)))
         observe_character(history, gen, model)
     else:
         print('history is too short, and this is unhandled. TODO: fix this')
@@ -86,13 +87,14 @@ def observe_character(history, character, model):
 
     """
     if character == u'\u0003':
+        # sys.stdout.write('Clearing history\n')
         history = []
     else:
         probabilities = model.calculate_probabilities(history)
         if probabilities:
             prob = probabilities[character]
             logprob = math.log(prob, 2 )
-            sys.stdout.write('log probability for %s: %.6f' %(character, logprob))
+            # sys.stdout.write('log probability for %s: %.6f' %(character, logprob))
         history.append(character)
     sys.stdout.write(u'\n')
     sys.stdout.flush()
@@ -109,7 +111,8 @@ def query_character(history, character, model):
     if probabilities:
         prob = probabilities[character]
         logprob = math.log(prob, 2)
-        sys.stdout.write('log probability for %s: %.6f' %(character, logprob))
+        # sys.stdout.write('log probability for %s: %.6f' %(character, logprob))
+        sys.stdout.write(logprob)
     sys.stdout.write(u'\n')
     sys.stdout.flush()
     return

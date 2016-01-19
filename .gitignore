@@ -2,3 +2,6 @@ venv
 *.pyc
 data/
 *.pickle
+*.joblib
+*.npy
+*.log
