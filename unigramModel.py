@@ -31,15 +31,16 @@ class UnigramModel(object):
         probabilities = {}
         counts = self._fd
         denom = counts.N() + ( lmda * len(self.alphabet) )
-        running_sum = 0
+        # running_sum = 0
         for i in xrange(len(self.alphabet)):
             char = self.alphabet[i]
             observed = counts[char]
-            if i < len(self.alphabet)-1:
-                p_i = (float(observed) + lmda) / denom
-                p_i = 1.0 - (1.0 - p_i)
-                running_sum += p_i
-            else:
-                p_i = 1 - running_sum
-            probabilities[char] = p_i
+            probabilities[char] = (float(observed) + lmda) / denom
+        #     if i < len(self.alphabet)-1:
+        #         p_i = (float(observed) + lmda) / denom
+        #         p_i = 1.0 - (1.0 - p_i)
+        #         running_sum += p_i
+        #     else:
+        #         p_i = 1 - running_sum
+        #     probabilities[char] = p_i
         return probabilities

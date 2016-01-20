@@ -9,11 +9,16 @@ outf = args.outf
 
 def prepare_text(text):
     out = u''
+    stop_char = u'\u0003'
     for i in range(len(text)):
         char = text[i]
         if i > 0:
             out = out + u'q' + char
         out = out + u'o' + char
+    if out[-1] != stop_char:
+        out = out + u'q' + stop_char
+        out = out + u'o' + stop_char
+    out = out + u'x'
     return out
 
 def output(s):
@@ -34,7 +39,7 @@ if __name__ == "__main__":
         out = prepare_text(text)
         output(out)
     if args.stdin:
-        text = sys.stdin.read()
+        text = sys.stdin.read().encode('utf-8')
         text = unicode(text)
         text = text.strip()
         out = prepare_text(text)

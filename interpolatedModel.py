@@ -110,7 +110,7 @@ class InterpolatedModel(object):
                 probabilities[char] = p_char
             return probabilities
 
-    def _calculate_prob_empty_history(self, character=None, lmda=0.0001):
+    def _calculate_prob_empty_history(self, character=None, lmda=0.000001):
         """TODO: Docstring for calculate_probabilities.
 
         :returns: TODO
@@ -124,15 +124,16 @@ class InterpolatedModel(object):
         for i in xrange(len(self.alphabet)):
             char = self.alphabet[i]
             observed = counts[char]
-            if i < len(self.alphabet)-1:
-                p_i = (float(observed) + lmda) / denom
-                p_i = 1.0 - (1.0 - p_i)
-                running_sum += p_i
-            else:
-                p_i = 1 - running_sum
-            probabilities[char] = p_i
+            probabilities[char] = (float(observed) + lmda) / denom
+            # if i < len(self.alphabet)-1:
+            #     p_i = (float(observed) + lmda) / denom
+            #     p_i = 1.0 - (1.0 - p_i)
+            #     running_sum += p_i
+            # else:
+            #     p_i = 1 - running_sum
+            # probabilities[char] = p_i
         if character:
-            logprob = math.log(probabilities[character])
+            logprob = math.log(probabilities[character], 2)
             return logprob
         else:
             return probabilities

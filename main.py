@@ -12,13 +12,13 @@ except ImportError:
 
 parser = argparse.ArgumentParser(description='CSE517 HW1')
 parser.add_argument('random_seed', type=int, help='Seed for the random number generator')
-parser.add_argument('-n', '--ngram', type=int, choices=xrange(2,9), help='n (int) to use for the ngram (default 2: bigram)')
+# parser.add_argument('-n', '--ngram', type=int, choices=xrange(2,9), help='n (int) to use for the ngram (default 2: bigram)')
 parser.add_argument('-v', '--verbose', help='verbose output for debugging', action='store_true')
 args = parser.parse_args()
 np.random.seed(args.random_seed)
-ngram_n = 2
-if args.ngram:
-    ngram_n = args.ngram
+# ngram_n = 2
+# if args.ngram:
+#     ngram_n = args.ngram
 verbose = args.verbose
 
 alphabet = get_bmp_alphabet()
@@ -142,12 +142,12 @@ def generate_character(history, model):
             out_str = out_str + "// generated unicode character %d" %(ord(gen))
         out_str = out_str + u'\n'
         output(out_str)
-        history = observe_character(history, gen, model)
+        history = observe_character(history, gen, model, newline=False)
     else:
         print('history is too short, and this is unhandled. TODO: fix this')
     return history
 
-def observe_character(history, character, model):
+def observe_character(history, character, model, newline=True):
     """TODO: Docstring for observe_character.
 
     :character: TODO
@@ -156,7 +156,7 @@ def observe_character(history, character, model):
     """
     if character == u'\u0003':
         if verbose:
-            output(u'// Clearing history')
+            output(u'// Clearing history\n')
         history = []
     else:
         # probabilities = model.calculate_probabilities(history)
@@ -170,11 +170,12 @@ def observe_character(history, character, model):
         # history.append(character)
         if verbose:
             logprob = model.calculate_probability(history=history, character=character)
-            out_str = "// added character %s to history (logprob %.3f)" %(character, logprob)
+            out_str = "// added character %s to history (logprob %.3f)\n" %(character, logprob)
             output(out_str)
         history.append(character)
 
-    output(u'\n')
+    if newline:
+        output(u'\n')
     return history
 
 def query_character(history, character, model):
@@ -225,8 +226,7 @@ def process_commands(model, commands, history=[]):
                 else:
                     output(history)
                 end = time.time()
-                if verbose:
-                    output('total time %.2f seconds' %(end-start))
+                output('\ntotal time %.2f seconds\n' %(end-start))
             sys.exit(0)
         elif command == u'o':
             i += 1
@@ -246,7 +246,9 @@ if __name__ == "__main__":
     history = []
     # model_weights = [0.1, 0.2, 0.3, 0.4]
     # model_weights = [0.1, 0.1, 0.2, 0.3, 0.3]
-    model_weights = None
+    model_weights = [0.01, 0.04, 0.15, 0.3, 0.5]
+    # model_weights = [0.5, 0.3, 0.2]
+    # model_weights = None
     # model = load_model()
     start = time.time()
     model = load_interpolated_model(num_models=5, model_weights=model_weights)

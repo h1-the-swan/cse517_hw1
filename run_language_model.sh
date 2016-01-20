@@ -8,4 +8,4 @@ fi
 
 # Replace the following with a call to your own program.
 
-python uniform_language_model.py $1 
+python main.py $1 

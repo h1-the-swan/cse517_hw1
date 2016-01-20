@@ -42,7 +42,7 @@ class MyLanguageModel(object):
         """
         return self._cfd[test_str]
 
-    def calculate_probabilities(self, history, lmda=0.0001):
+    def calculate_probabilities(self, history, lmda=0.0000001):
         """
         calculate the probability distribution across the alphabet with additive smoothing
 
@@ -72,17 +72,19 @@ class MyLanguageModel(object):
             char = self.alphabet[i]
             observed = counts[char]
             # probabilities[char] = Decimal((observed + lmda) / denom)
-            # probabilities[char] = (float(observed) + lmda) / denom
+            probabilities[char] = (float(observed) + lmda) / denom
 
             # problem with probabilities not summing to one, trying this:
             # http://stackoverflow.com/questions/17641300/rounding-floats-so-that-they-sum-to-precisely-1
-            if i < len(self.alphabet)-1:
-                p_i = (float(observed) + lmda) / denom
-                p_i = 1.0 - (1.0 - p_i)
-                running_sum += p_i
-            else:
-                p_i = 1 - running_sum
-            probabilities[char] = p_i
+            # if i < len(self.alphabet)-1:
+            #     p_i = (float(observed) + lmda) / denom
+            #     p_i = 1.0 - (1.0 - p_i)
+            #     running_sum += p_i
+            # else:
+            #     p_i = 1 - running_sum
+            # if p_i <= 0:
+            #     print('negative:', self._ngram_seq_count, char, p_i, observed)
+            # probabilities[char] = p_i
         # for char, count in counts.iteritems():
         #     probabilities[char] = float(count) / denom
         return probabilities

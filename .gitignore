@@ -5,3 +5,4 @@ data/
 *.joblib
 *.npy
 *.log
+testp*
