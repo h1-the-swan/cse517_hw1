@@ -76,7 +76,7 @@ class MyLanguageModel(object):
 
             # problem with probabilities not summing to one, trying this:
             # http://stackoverflow.com/questions/17641300/rounding-floats-so-that-they-sum-to-precisely-1
-            if i < len(self.alphabet):
+            if i < len(self.alphabet)-1:
                 p_i = (float(observed) + lmda) / denom
                 p_i = 1.0 - (1.0 - p_i)
                 running_sum += p_i
