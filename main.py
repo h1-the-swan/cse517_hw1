@@ -224,6 +224,9 @@ def process_commands(model, commands, history=[]):
                     output(''.join(history))
                 else:
                     output(history)
+                end = time.time()
+                if verbose:
+                    output('total time %.2f seconds' %(end-start))
             sys.exit(0)
         elif command == u'o':
             i += 1
@@ -241,10 +244,12 @@ def print_time_from_start(start):
 
 if __name__ == "__main__":
     history = []
-    model_weights = [0.1, 0.2, 0.3, 0.4]
+    # model_weights = [0.1, 0.2, 0.3, 0.4]
+    # model_weights = [0.1, 0.1, 0.2, 0.3, 0.3]
+    model_weights = None
     # model = load_model()
     start = time.time()
-    model = load_interpolated_model(num_models=4, model_weights=model_weights)
+    model = load_interpolated_model(num_models=5, model_weights=model_weights)
     if verbose:
         print_time_from_start(start)
     # command_line(history)
@@ -253,6 +258,3 @@ if __name__ == "__main__":
     commands = to_unicode(commands)
 
     process_commands(model, commands, history)
-    end = time.time()
-    if verbose:
-        print('total time %.2f seconds' %(end-start))

@@ -59,12 +59,25 @@ class InterpolatedModel(object):
         # one weight for [1-gram, 2-gram, ..., highest_order_gram]
         # defaults to equal weights for all:
 
+        # special case for empty history
+        if not history:
+            return self._calculate_prob_empty_history(character=character)
+
         models = self.models
         if not model_weights:
             model_weights = self.model_weights
             if not model_weights:
                 num_models = len(models)
                 model_weights = [1.0 / num_models for i in range(num_models)]
+
+        # if the history is too short to use all the models
+        if len(history) < len(models)-1:
+            cutoff = len(history)+1
+            models = models[:cutoff]
+            # transfer the weights of the unused models to the highest order model
+            unused_model_weights = sum(model_weights[cutoff:])
+            model_weights = model_weights[:cutoff]
+            model_weights[-1] += unused_model_weights
 
         if character:
             # unigram first
@@ -97,5 +110,30 @@ class InterpolatedModel(object):
                 probabilities[char] = p_char
             return probabilities
 
+    def _calculate_prob_empty_history(self, character=None, lmda=0.0001):
+        """TODO: Docstring for calculate_probabilities.
 
+        :returns: TODO
+
+        """
+        with open('freq_dist_empty_history.pickle', 'rb') as f:
+            counts = pickle.load(f)
+        probabilities = {}
+        denom = counts.N() + ( lmda * len(self.alphabet) )
+        running_sum = 0
+        for i in xrange(len(self.alphabet)):
+            char = self.alphabet[i]
+            observed = counts[char]
+            if i < len(self.alphabet)-1:
+                p_i = (float(observed) + lmda) / denom
+                p_i = 1.0 - (1.0 - p_i)
+                running_sum += p_i
+            else:
+                p_i = 1 - running_sum
+            probabilities[char] = p_i
+        if character:
+            logprob = math.log(probabilities[character])
+            return logprob
+        else:
+            return probabilities
         

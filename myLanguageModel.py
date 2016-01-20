@@ -42,7 +42,7 @@ class MyLanguageModel(object):
         """
         return self._cfd[test_str]
 
-    def calculate_probabilities(self, history, lmda=0.01):
+    def calculate_probabilities(self, history, lmda=0.0001):
         """
         calculate the probability distribution across the alphabet with additive smoothing
 

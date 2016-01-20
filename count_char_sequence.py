@@ -8,6 +8,7 @@ start = time.time()
 parser = argparse.ArgumentParser(description='count sequences of characters')
 parser.add_argument('fname', type=str, help='text file of natural language')
 parser.add_argument('seq_length', type=int, help='length of character sequence to count')
+parser.add_argument('--first_chars', help='just get a frequency distribution of the first characters in each sentence (of a U+0003 delimited list of sentences like in the tatoeba data set) (this overrides the seq_length argument)', action='store_true')
 parser.add_argument('-v', '--verbose', help='verbose output', action='store_true')
 args = parser.parse_args()
 fname = args.fname
@@ -28,6 +29,38 @@ def progressbar_init(maxval=None):
 
 with codecs.open(fname, 'r', 'utf-8') as f:
     text = f.read()
+
+if args.first_chars:
+    stop_char = u'\u0003'
+    sents = text.split(stop_char)
+    if verbose:
+        print(datetime.now())
+        print("%s run with the --first_chars flag" %(sys.argv[0]))
+        print("counting first char frequences of sentences from file: %s" %(fname))
+        sys.stdout.flush()
+    fd = FreqDist()
+    c = 0
+    for sent in sents:
+        c += 1
+        if sent:
+            char = sent[0]
+            fd[char] += 1
+            if verbose:
+                if ( c in [20, 100, 1000, 10000, 100000, 1000000] ) or ( c % 10000000 == 0 ):
+                    print("%d sentences processed" %(c))
+                    sys.stdout.flush()
+    fname = 'freq_dist_empty_history.pickle'
+    with open(fname, 'wb') as outf:
+        if verbose:
+            print("pickling to %s" %(fname))
+        sys.stdout.flush()
+        pickle.dump(fd, outf)
+    end = time.time()
+    if verbose:
+        print("total time: %.2f seconds" %(end-start))
+        sys.stdout.flush()
+    sys.exit(0)
+
 
 if seq_length > 1:
     if verbose:
