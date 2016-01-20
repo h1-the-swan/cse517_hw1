@@ -128,10 +128,16 @@ def generate_character(history, model):
     ###
     probabilities = model.calculate_probability(history=history, character=None)
     if probabilities:
+        sorted_probabilities = sorted(probabilities.items(), key=lambda x: x[1])
+        sorted_probabilities = sorted_probabilities[-50:]
+        gen_alphabet = [item[0] for item in sorted_probabilities]
+
         p = []
         for char in alphabet:
             p.append(probabilities[char])
-        gen = np.random.choice(alphabet, p=p)
+        gen = None
+        while gen not in gen_alphabet:
+            gen = np.random.choice(alphabet, p=p)
         # sys.stdout.write(gen)
         # sys.stdout.write(u'\n')
         # sys.stdout.flush()
